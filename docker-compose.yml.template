@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  app:
+    image: maomuriel/ubun22_04-php8_1-apache2_4:0.2.4
+    container_name: "app"
+    stdin_open: false # docker run -i
+    tty: false # docker run -t
+    environment:
+      - "TZ=America/Bogota"
+    ports:
+      - "8000:80"
+    volumes:
+      - "/path-to-project/app:/var/www/app"
+      - "/path-to-project/docs/apache2/sites-available:/etc/apache2/sites-available" #Configuracion Apache Web Server
+    depends_on:
+      - "db"
+    links:
+      - "db:mysql"
+  db:
+    image: docker.io/library/mariadb:10.11.2
+    container_name: "db"
+    environment:
+      - "TZ=America/Bogota"
+      - "MYSQL_ROOT_PASSWORD=xxx"
+    volumes:
+      - "/path-to-project/mariadb-data:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+  phpmia:
+    container_name: "phpmia"
+    image: "phpmyadmin/phpmyadmin"
+    environment:
+      - "TZ=America/Bogota"
+      - "PMA_HOST=db"
+    ports:
+      - "8090:80"
+    depends_on: 
+      - "db"
+    links: 
+      - "db"
